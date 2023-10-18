@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import csv
+import pandas as pd
+import sqlite3
+
+dbfile = './postcode.my/postcode-my.db'
+
+def initdb(dbfile):
+	try:
+		conn = sqlite3.connect(dbfile)
+	except:
+		print("Couldn't initialize database")
+		sys.exit(1)
+	conn.row_factory = sqlite3.Row
+	return conn
+
+conn = initdb(dbfile)
+df = pd.read_sql_query('select * from postcode order by State, "Post Office", Location, Postcode, url;', conn)
+conn.close()
+# get rid of the index column since we don't need it anymore
+df = df.drop('index', axis=1)  # axis=1 means columns
+df = df.drop('url', axis=1)  # axis=1 means columns
+# save the dataframe to a csv file
+df.to_csv('./postcode.my/postcode-my.csv', index=False)

@@ -59,6 +59,7 @@ To output a sorted .csv file from the current database, run `db2csv`. This .csv 
 ## Errors found on the postcode.my site
 ### Wrong urls
 | Url                                                                                          | Error                    |
+| -------------------------------------------------------------------------------------------- | ------------------------ |
 | https://postcode.my/perak-bandar-seri-iskandar-uitm-cawangan-bandar-seri-iskandar-32600.html | Postcode should be 32610 |
 | https://postcode.my/selangor-subang-jaya-subang-jaya-usj-9-11-47610.html                     | Postcode should be 47620 |
 

@@ -16,7 +16,7 @@ import sqlite3
 trywayback = True
 sourcefiles = ['listing_part1.xml', 'listing_part2.xml']
 accesstime = 0  # last time https://postcode.my was accessed
-maxwait = 230  # delay / wait between accesses to postcode.my setting here. Was 222 and still got the catcha eventually (~1000?)
+maxwait = 230  # delay / wait between accesses to postcode.my setting here. Was 222 and still got the catcha eventually (~1000?). 230 has consistently prevented the captcha for a while now.
 retrydelay_incr = 10
 dbfile = './postcode.my/postcode-my.db'
 
@@ -419,7 +419,9 @@ def procpage(response):
 ########
 
 # Initialization Section
-conn = initdb(dbfile)
+if not trywayback:
+	# Connect the database for non-wayback mode
+	conn = initdb(dbfile)
 # Set up requests session and output csv file
 s = requests.Session()
 outfile = open('output.csv', 'w')
@@ -428,9 +430,9 @@ w = csv.writer(outfile)
 # Get list of urls to scrape
 urls = getpages(sourcefiles)
 
-# Set up files used to pick up where left off (startat.txt and laststartat.txt) and set startat (used by main loop to skip already dones)
-# TODO: handle case where want to re-run with same startat. Only if run `./harvest` will new figures be respected
-startat = getstartat()
+# Set startat (used by main loop to skip already dones)
+# TODO: handle case where want to re-run with same startat. Only if run `./harvest` will new figures be respected. For now, do manually with: `harvest reset`.
+startat = getstartat()  # Also, sets up files used to pick up where left off (startat.txt and laststartat.txt)
 
 # Main loop
 c = 0

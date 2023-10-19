@@ -63,7 +63,7 @@ To output a sorted .csv file from the current database, run `db2csv`. This .csv 
 | https://postcode.my/perak-bandar-seri-iskandar-uitm-cawangan-bandar-seri-iskandar-32600.html | Postcode should be 32610 |
 | https://postcode.my/selangor-subang-jaya-subang-jaya-usj-9-11-47610.html                     | Postcode should be 47620 |
 
-There're also a few urls missing a hyphen, but I fixed them manually without writing them down.
+There're also a few urls missing a hyphen. I found them because, during development, part of checking the data was constructing the url from the Location, Post Office, State, and Postcode. A few times, this url differed from the ones in postcode.my's sitemap files, but I didn't write them down.
 
 ### Duplicate urls
 I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:

@@ -6,7 +6,13 @@ The purpose of this repo is to serve as a template and demonstration of an MVP f
 ## The lat/long data
 Currently, I have scraped all the urls, but I'm sure a lot of the lat/long data is still old and different from the current data. The coordinates seem nearby, though, so perhaps they will still be of use before all data is current. (Estimated time: a few more weeks.)
 
-[https://github.com/Flurrywinde/dualscraper/blob/main/postcode.my/postcode-my.csv](https://github.com/Flurrywinde/dualscraper/blob/main/postcode.my/postcode-my.csv)
+### .csv file
+[https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv)
+
+### sqlite database
+[https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.db](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.db)
+
+(also has a column containing the url)
 
 ## Installation
 ```

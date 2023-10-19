@@ -13,7 +13,6 @@ if getnulls:
 	urls = iter(cur.fetchall())
 else:
 	urls = getpages(sourcefiles)
-startat = getstartat()
 c = 0
 success = True
 while True:

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# whatis: Run this after each incomplete run of postcode_wayback.py to save harvest and current state, so next run will pickup where left off
+
+# Saves both interim csv file (e.g. 0-11.csv) and allsofar.csv . When wayback2.py is finished, allsofar.csv contains all the rows (in job get1, this is whole site with some from wayback machine, and in job get2, it's all urls in scrapethis.txt (made by job check)). When ready to start get2, must manually backup and del (mv) allsofar.csv and reset startat.txt to 0.
+
+usage() {
+	echo -e "Usage: harvest [reset]\n"
+	echo -e "No parms\tharvest"
+	echo -e "'reset' parm\treset startat, so wayback2.py re-does what it just did"
+}
+
+if [ $# -ge 1 ]; then
+	if [ "$1" = 'reset' ]; then
+		startat=$(cat startat.txt)
+		laststartat=$(cat laststartat.txt)
+		echo "Replacing startat: $startat with $laststartat"
+		echo $laststartat > startat.txt
+		exit
+	else
+		usage
+		exit
+	fi
+fi
+
+# get last startat
+first=$(cat laststartat.txt)
+startat=$(cat startat.txt)
+echo "Last startat: $startat"
+# Check if already ran it
+if [ $first -eq $startat ]; then
+	echo "Suspect you already ran this"
+	exit 1
+fi
+# save current startat as next time's previous startat
+cp startat.txt laststartat.txt
+last=$((startat - 1))
+# save this batch of the harvest
+cp output.csv $first-$last.csv
+cat output.csv >> allsofar.csv
+echo "Made $first-$last.csv"

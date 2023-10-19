@@ -66,6 +66,8 @@ To output a sorted .csv file from the current database, run `db2csv`. This .csv 
 There're also a few urls missing a hyphen, but I fixed them manually without writing them down.
 
 ### Duplicate urls
+I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:
+
 https://postcode.my/johor-muar-jalan-bakri-batu-2-84000.html  
 https://postcode.my/johor-muar-kampung-baru-bakri-84200.html  
 https://postcode.my/johor-pontian-kampung-pesisir-82000.html  

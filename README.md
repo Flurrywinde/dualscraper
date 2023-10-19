@@ -16,20 +16,20 @@ Currently, I have scraped all the urls, but I'm sure a lot of the lat/long data 
 
 ## Installation
 ```
-# mkdir /path/to/project
-# cd /path/to/project
-# git clone git@github.com:Flurrywinde/dualscraper.git .
-# wget 'https://postcode.my/xml/listing_part1.xml.gz'
-# wget 'https://postcode.my/xml/listing_part2.xml.gz'
-# gunzip listing_part1.xml.gz
-# gunzip listing_part2.xml.gz
+$ mkdir /path/to/project
+$ cd /path/to/project
+$ git clone git@github.com:Flurrywinde/dualscraper.git .
+$ wget 'https://postcode.my/xml/listing_part1.xml.gz'
+$ wget 'https://postcode.my/xml/listing_part2.xml.gz'
+$ gunzip listing_part1.xml.gz
+$ gunzip listing_part2.xml.gz
 ```
 
 ## Usage
 ### Initial run
 ```
-# cd /path/to/project
-# python dualscraper.py
+$ cd /path/to/project
+$ python dualscraper.py
 ```
 Initial output is to `output.csv`. (Erased each run. See below.)
 

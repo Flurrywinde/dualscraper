@@ -2,7 +2,8 @@ import os
 import pandas as pd
 import requests
 import sys
-import csv, re, time
+import csv, re
+from time import strftime, localtime, sleep
 import fileinput
 import waybackpy.exceptions
 from lxml import etree as ET
@@ -18,13 +19,14 @@ sourcefiles = ['listing_part1.xml', 'listing_part2.xml']
 accesstime = 0  # last time https://postcode.my was accessed
 maxwait = 230  # delay / wait between accesses to postcode.my setting here. Was 222 and still got the catcha eventually (~1000?). 230 has consistently prevented the captcha for a while now.
 retrydelay_incr = 10
+waybackdelay = 1  # The Wayback Machine seems to throttle too, so I suggest not setting this to 0.
 dbfile = './postcode.my/postcode-my.db'
 
 def initdb(dbfile):
 	try:
 		conn = sqlite3.connect(dbfile)
 	except:
-		print("Couldn't initialize database")
+		debugtee('debug', "Couldn't initialize database")
 		sys.exit(1)
 	conn.row_factory = sqlite3.Row
 	return conn
@@ -36,8 +38,8 @@ def dbexe_list(str, *parms):  # secure db execute (returns the cursor)
 	try:
 		cur.execute(str, tuple(parms))
 	except sqlite3.Error as er:
-		print('Sql error:', er)
-		print(f'Sql: {str} {parms}')
+		debugtee('debug', 'Sql error:', er)
+		debugtee('debug', f'Sql: {str} {parms}')
 		sys.exit(1)
 	return cur
 
@@ -47,8 +49,8 @@ def dbexe(str, *parms):  # secure db execute (returns the cursor)
 		cur = conn.cursor()
 		cur.execute(str, tuple(parms))
 	except sqlite3.Error as er:
-		print('Sql error:', er)
-		print(f'Sql: {str} {parms}')
+		debugtee('debug', 'Sql error:', er)
+		debugtee('debug', f'Sql: {str} {parms}')
 		sys.exit(1)
 	return cur
 
@@ -56,7 +58,7 @@ def getpages(xmlfiles):
 	if isinstance(xmlfiles, str):
 		xmlfiles = list(xmlfiles)
 	elif not isinstance(xmlfiles, list):
-		print(f'Error: getpages: string or list required but got {type(xmlfiles)}')
+		debugtee('debug', f'Error: getpages: string or list required but got {type(xmlfiles)}')
 	count = 1
 	for xfile in xmlfiles:
 		tree = ET.parse(xfile)
@@ -69,6 +71,23 @@ def getpages(xmlfiles):
 			yield elements.popleft()
 		yield from elements  # this gets the last one
 
+def debugtee(dfile, text):
+	debuglog(dfile, text)
+	print("Debug: {0}".format(text))
+
+def debuglog(dfile, text):
+	with open("{0}.txt".format(dfile), "a+", encoding="utf-8") as text_file:
+		text_file.write("{0}: {1}\n".format(strftime("%m-%d %H:%M:%S", localtime()), text))
+
+def mkdir_p(path):
+	try:
+		os.makedirs(path)
+	except OSError as exc:	# Python >2.5
+		if exc.errno == errno.EEXIST and os.path.isdir(path):
+			pass
+		else:
+			raise
+
 # fixtable(): takes a dict (pandas table found in html). Returns True if all keys are in goodfields list, else False.
 # Fixes case when table has adsbygoogle in field by removing that whole key/value pair. Everything else is correct. Oh, wait, that's a table unto itself, and the goodfields are in the next table. So this removes the bad field, leaving an empty table.
 # {'Kawasan Industri Ringan Prima Kota, Kuantan (Postcode - 25200)  0 Stars.  (adsbygoogle = window.adsbygoogle || []).push({});  Listing Information  ItemDescription  LocationKawasan Industri Ringan Prima Kota  Post OfficeKuantan  StatePahang  Postcode25200  GPS Coordinate (Approximate)  Latitude : 3.8738240000  Longitude : 103.3312410000  Location, Maps and Direction': 'Add Review  Report Error  (adsbygoogle = window.adsbygoogle || []).push({});'}
@@ -76,57 +95,57 @@ def getpages(xmlfiles):
 def fixtable(t):
 	goodfields = ['Location','Post Office','State','Postcode','Latitude','Longitude']
 	badfield = False
-	#print(f'fixtable: in2: {t}')
+	#debugtee('debug', f'fixtable: in2: {t}')
 	for k in list(t):
-		#print(f'fixtable: "--=={k}==--"', end='')
+		#debugtee('debug', f'fixtable: "--=={k}==--"', end='')
 		if not k in goodfields:
-			#print(f'Removing bad field: "{k}": "{t[k]}"')
+			#debugtee('debug', f'Removing bad field: "{k}": "{t[k]}"')
 			del t[k]
 			badfield = True
 			with open('badfields.txt', 'a') as f:
 				f.write(str(t))
 		#else:
-			#print('good')
+			#debugtee('debug', 'good')
 	if badfield:
-		#print(f'fixtable: out: {t}')
-		#print(f'fixtable: returning bad')
+		#debugtee('debug', f'fixtable: out: {t}')
+		#debugtee('debug', f'fixtable: returning bad')
 		return False
 	else:
-		#print(f'fixtable: out: {t}')
-		#print(f'fixtable: returning good')
+		#debugtee('debug', f'fixtable: out: {t}')
+		#debugtee('debug', f'fixtable: returning good')
 		return True
 
 def getlatlong(row, html):
 	# Could also get lat and long from the key in fixtable()
 	keys = row.keys()
 	if 'Latitude' in keys or 'Longitude' in keys:
-		print(f'Should never happen. Found latlong in row: {row}')
+		debugtee('debug', f'Should never happen. Found latlong in row: {row}')
 		sys.exit(1)
 	try:
 		lat = re.search(r'Latitude( )*:.*?([-\.0123456789]+)', html)[2]
 	except TypeError as e:
 		# NoneType not subscriptable. No Latitude in html: https://web.archive.org/web/20160618121617/http://postcode.my/melaka-melaka-jabatan-perhubungan-perusahaan-75536.html
-		print(f'No lat in html for row: {row}')
+		debugtee('debug', f'No lat in html for row: {row}')
 		with open('badlat.html', 'w') as f:
 			f.write(html)
 		return False
 	except Exception as e:
 		print("Unexpected error:", sys.exc_info()[0])
-		print(f'doc: {e.__doc__}')
-		print(e)
+		debugtee('debug', f'doc: {e.__doc__}')
+		debugtee('debug', e)
 		raise
 
 	try:
 		long = re.search(r'Longitude( )*:.*?([-\.0123456789]+)', html)[2]
 	except TypeError as e:
-		print(f'No longitude in html for row: {row}')
+		debugtee('debug', f'No longitude in html for row: {row}')
 		with open('badlong.html', 'w') as f:
 			f.write(html)
 		return False
 	except Exception as e:
 		print("Unexpected error:", sys.exc_info()[0])
-		print(f'doc: {e.__doc__}')
-		print(e)
+		debugtee('debug', f'doc: {e.__doc__}')
+		debugtee('debug', e)
 		raise
 
 	row['Latitude'] = lat
@@ -144,7 +163,7 @@ def livewait():
 			print(f'Using postcode.my live data after sleeping for {sleepfor} seconds...', end='')
 		else:
 			print(f'Not on wayback machine, so use postcode.my live data after sleeping for {sleepfor} seconds...', end='')
-		time.sleep(sleepfor)
+		sleep(sleepfor)
 		print('Done!')
 	else:
 		if job == 'get1':
@@ -182,19 +201,19 @@ def fixlatlong(url, row, bydeletion=False):
 	if cur2:
 		changes = cur2.fetchall()[0][0]
 		if changes != 1:
-			print(f'Live (good) data: {row}')
+			debugtee('debug', f'Live (good) data: {row}')
 			if bydeletion:
 				actionstr = 'deleted'
 			else:
 				actionstr = 'changed'
-			print(f'Warning: {actionstr} {changes} rows')
+			debugtee('debug', f'Warning: {actionstr} {changes} rows')
 			for i in cur:
-				print(list(i))
+				debugtee('debug', list(i))
 	else:
-		print(f'bydel: {bydeletion}')
-		print(f'fixlatlong: select changes() failed?!?')
+		debugtee('debug', f'bydel: {bydeletion}')
+		debugtee('debug', f'fixlatlong: select changes() failed?!?')
 		for i in cur:
-			print(list(i))
+			debugtee('debug', list(i))
 		sys.exit(1)
 
 def getwaybacksnapshots(url):
@@ -234,14 +253,14 @@ def getwayurl():
 			waytry = cdx.near(year)
 		except waybackpy.exceptions.NoCDXRecordFound as e:
 			# happens when no snapshots for this url
-			print(f'waytry near {year} not found')
+			debugtee('debug', f'waytry near {year} not found')
 			# waytry will still be 'start', so change to '', lest s.get try to get url with start prepended
 			waytry = ''
 		except Exception as e:
-			print('waytry unknown error')
-			print(e.__doc__)
+			debugtee('debug', 'waytry unknown error')
+			debugtee('debug', e.__doc__)
 			try:
-				print(e.message)  # not all exceptions have this
+				debugtee('debug', e.message)  # not all exceptions have this
 			except AttributeError:
 				# e has no attr message
 				pass
@@ -264,70 +283,70 @@ def getwayurl():
 	else:
 		# not same as old, so use it, i.e. didn't hit end, so proceed with previous year
 		wayurl = waytry
-	print(wayurl + url)
+	debugtee('debug', wayurl + url)
 	return wayurl
 
 def non200code(response):
 	global year, advancesnap
 	if response.status_code == 404:
 		# Not found. Try again. (I think doesn't happen anymore. Was due to bad wayurl.)
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
 		year -= 1
 	elif response.status_code == 504:
 		# Time out. Try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
 	elif response.status_code == 429:
 		# Too many requests. Wait and try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		sleep(3)
 	elif response.status_code == 500:
 		# Internal server error. Wait and try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		sleep(3)
 	elif response.status_code == 523:
 		# Unknown error. Wait and try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		sleep(3)
 	elif response.status_code == 520:
 		# Unknown error. Wait and try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		sleep(3)
 	elif response.status_code == 503:
 		# Service unavailable. Wait and try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		sleep(3)
 	elif response.status_code == 524:
 		# No reason whatsoever??? Happened when catcha'd out and went to real postcode.my site. Wait and try again
 		# Happened again, real postcode.my site, but not captcha
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		print(response)
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		debugtee('debug', response)
+		sleep(3)
 	elif response.status_code == 502:
 		# Bad gateway. Wait and try again
 		advancesnap = False
-		print(f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
-		time.sleep(3)
+		debugtee('debug', f'{c}: {response.status_code} {response.reason}: {wayurl}{url}')
+		sleep(3)
 	else:
 		# Unknown failed request, so alert programmer to decide if needs sleep and/or advancesnap
-		print(response.status_code)
-		print(response.reason)
-		print(response)
+		debugtee('debug', response.status_code)
+		debugtee('debug', response.reason)
+		debugtee('debug', response)
 		sys.exit()
 
 def procpage(response):
-	global advanceurl 
+	global advanceurl
 	try:
 		tbls = pd.read_html(response.text)
 	except ValueError as e:
 		# Got no tables error. Was error on postcode.my at the time: https: // web.archive.org / web / 20131205013002 / http: // postcode.my / negeri - sembilan - kuala - klawang - taman - irama - 71600. html
-		print(e)
+		debugtee('debug', e)
 		# log it to scrape manually
 		with open('failed2.txt', 'a') as f:
 			f.write(url + '\n')
@@ -362,8 +381,8 @@ def procpage(response):
 			#row.update(t.values)
 			row.update(t)
 		except ValueError as e:
-			print(e)
-			print('I think this was for when was t.values, so will not happen now')
+			debugtee('debug', e)
+			debugtee('debug', 'I think this was for when was t.values, so will not happen now')
 			sys.exit()
 			# dictionary update sequence element  # 0 has length 4; 2 is required
 			# Bad: 0... 3 0
@@ -373,7 +392,7 @@ def procpage(response):
 			# [3 rows x 4 columns]
 			#
 			# This is the search form, so just skip it
-			print(f'Bad: {t}')
+			debugtee('debug', f'Bad: {t}')
 			fname = re.sub('/', '+', f'{wayurl}{url}-{tcount}')
 			# Log the table for debugging (can del if always just the search form)
 			with open(f'{fname}.tbl', 'w') as f:
@@ -385,19 +404,19 @@ def procpage(response):
 	# check if still need to get latlong
 	if 'Latitude' not in row.keys():  # only Lat good enough?
 		if getlatlong(row, response.text):
-			print(f'NEW LATLONG {c}:\t{row}')
+			debugtee('debug', f'NEW LATLONG {c}:\t{row}')
 			with open('newlatlong.txt', 'a') as f:
 				f.write(str(row) + '\n')
 		else:
 			# Still failed to get lat long
-			print('still no latlong')
+			debugtee('debug', 'still no latlong')
 			advanceurl = False
 			return None
 
 	# latlong is 0.0000: https://web.archive.org/web/20140724100239/http://postcode.my/melaka-melaka-jabatan-anti-malaria-75584.html
 	try:
 		if float(row['Latitude']) == 0 and float(row['Longitude']) == 0:
-			print(f'latlong zeroes:\t{row}')
+			debugtee('debug', f'latlong zeroes:\t{row}')
 			advanceurl = False
 			return None
 	except KeyError:
@@ -406,10 +425,10 @@ def procpage(response):
 		return None
 
 	# latlong might be empty: https://web.archive.org/web/20150619125202/http://postcode.my/melaka-melaka-jabatan-perangkaan-75514.html
-	# print(f'bad latlong: {row}')
+	# debugtee('debug', f'bad latlong: {row}')
 	if isinstance(row['Latitude'], float):  # need check long too?
 		if isnan(row['Latitude']):
-			print(f'blank latlong: {row}')
+			debugtee('debug', f'blank latlong: {row}')
 			advanceurl = False
 			return None
 	return row
@@ -420,6 +439,8 @@ def procpage(response):
 
 # Initialization Section
 if not trywayback:
+	# Make directory (if it doesn't exist already) for postcode.my .db and .csv file
+	mkdir_p('postcode.my')
 	# Connect the database for non-wayback mode
 	conn = initdb(dbfile)
 # Set up requests session and output csv file
@@ -446,7 +467,7 @@ while True:
 			break
 		# f.write(f'{url.text}\n')  # this was to verify getpages() correctness with grep-made urls
 		if c < startat:
-			print(f'{c}: Skipping: {url.text}')
+			debugtee('debug', f'{c}: Skipping: {url.text}')
 			c += 1
 			continue
 		# Reset retrydelay if prev was successful, otherwise let it increment to wait longer and longer each time
@@ -472,38 +493,42 @@ while True:
 		if trywayback:
 			wayurl = getwayurl()  # Sets globals, you bad programmer
 			if wayurl is None:
-				print("Hmmm... won't break cause it to not try live site? Change this to just set wayurl to ''?")
+				debugtee('debug', "Hmmm... won't break cause it to not try live site? Change this to just set wayurl to ''?")
 				break
 		else:
 			wayurl = ''
 
-		# Wait if going live
+		# Avoid getting throttled/captcha'ed
 		if wayurl == '':
+			# Wait if going live
 			livewait()
+		elif c > 0 and trywayback:
+			# Shorter wait for wayback machine
+			sleep(waybackdelay)
 		# Get the page
 		try:
 			response = s.get(wayurl + url)
 		except requests.exceptions.ConnectionError as e:
-			print(e)
+			debugtee('debug', e)
 			if retrydelay > 0:
 				print(f'Waiting {retrydelay} seconds before retrying... ', end='')
-				time.sleep(retrydelay)
+				sleep(retrydelay)
 				print('Done!')
 			retrydelay += retrydelay_incr
 			if trywayback:
 				advancesnap = False
-				print(f'about to continue. wt: {waytry}, wu: {wayurl}')
+				debugtee('debug', f'about to continue. wt: {waytry}, wu: {wayurl}')
 			continue
 		except Exception as e:
-			print(f'Unknown Error in s.get call: {e.__doc__}')
+			debugtee('debug', f'Unknown Error in s.get call: {e.__doc__}')
 			try:
-				print(e.message)  # not all exceptions have this
+				debugtee('debug', e.message)  # not all exceptions have this
 			except AttributeError:
 				# e has no attr message
 				pass
-			print('-----')
-			print(e)
-			print('-----')
+			debugtee('debug', '-----')
+			debugtee('debug', e)
+			debugtee('debug', '-----')
 			raise
 
 		# Process response
@@ -512,7 +537,7 @@ while True:
 			if re.search(r'Unusual Traffic Activity', response.text):
 				if trywayback:
 					# but got captcha, so try again with older snapshot
-					print(f'{c}: Captcha: {wayurl + url}')
+					debugtee('debug', f'{c}: Captcha: {wayurl + url}')
 					year -= 1
 					continue
 				else:
@@ -525,19 +550,19 @@ while True:
 				success = True
 				break
 		else:
-			# request unsuccessful
+			# request unsuccessful (loop will continue)
 			non200code(response)
 	# End of snapshot loop
 
 	# Assume success if got here
 	if not success:
-		print("Hey! Don't come here if not successful.")
+		debugtee('debug', "Hey! Don't come here if not successful.")
 		sys.exit(1)
 	# Extract lat/long data from page. Assume success if got here
 	row = procpage(response)
 	if row is not None:
 		# Successfully found scrape data. Show what we found on stdout
-		print(f'{c}: {row}')
+		debugtee('debug', f'{c}: {row}')
 		# Write csv header if needed
 		if c == 0:
 			w.writerow(row.keys())

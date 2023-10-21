@@ -31,6 +31,16 @@ def initdb(dbfile):
 	conn.row_factory = sqlite3.Row
 	return conn
 
+def maketable(name, csvfile):
+	# TODO: lat/long are text type; make real type. Had to manually do it in sqlitebrowser
+	# Read in City.csv into Pandas dataframe
+	df = pd.read_csv(csvfile, dtype=object)  # dtype=object keeps field an int as opposed to real
+	#df = pd.read_csv(csvfile, dtype={'Latitude': float, 'Longitude': float})  # TypeError: Cannot cast array data from dtype('O') to dtype('float64') according to the rule 'safe' and ValueError: could not convert string to float: 'Latitude'
+	#df = pd.read_csv(csvfile)  # turned postcode to int, so lost leading zero
+	#print(df.dtypes, file=sys.stderr)  # verified lat long are floats if not dtype, but let's keep them strings, lest trailing zeroes removed
+	# Turn dataframe into sqlite table
+	df.to_sql(name, conn, if_exists='append', index=True)  # index=True creates auto-incrementing column named index
+
 def dbexe_list(str, *parms):  # secure db execute (returns the cursor)
 	# Use this to make fetchall return a list [a, b, c] instead of [(a,), (b,), (c,)] when select <one thing>
 	cur = conn.cursor()
@@ -563,11 +573,53 @@ while True:
 	if row is not None:
 		# Successfully found scrape data. Show what we found on stdout
 		debugtee('debug', f'{c}: {row}')
-		# Write csv header if needed
-		if c == 0:
-			w.writerow(row.keys())
-		# Write the row to the output file
-		w.writerow(row.values())
+		if trywayback:
+			# Write csv header if needed
+			if c == 0:
+				w.writerow(row.keys())
+			# Write the row to the output file
+			w.writerow(row.values())
+		else:
+			# non-wayback mode. Update database.
+			cur = dbexe('select * from postcode where Location=? and "Post Office"=? and State=? and Postcode=?', row['Location'], row['Post Office'], row['State'], row['Postcode'])
+			csvrows = cur.fetchall()  # csv is misnomer now; change to db
+			if len(csvrows) == 0:
+				# Should never happen. No csv data found. Log it
+				print(f"No csv data found for loc: {row['Location']}, po: {row['Post Office']}, st: {row['State']}, postcode: {row['Postcode']}")
+				sys.exit(1)
+			goodc = 0
+			badc = 0
+			#badlatlongs = []
+			for csvrow in csvrows:
+				#print(f"{type(csvrow['Latitude'])} {type(row['Latitude'])} {type(csvrow['Longitude'])} == type(row['Longitude']):
+				#print(type(csvrow['Latitude']), type(row['Latitude']), type(csvrow['Longitude']), type(row['Longitude']))  # csvrow latlong is float type. Manually changed db
+				#if csvrow['Latitude'] == row['Latitude'] and csvrow['Longitude'] == row['Longitude']:
+				if csvrow['Latitude'] is None:  # long too?
+					badc += 1
+				elif float(csvrow['Latitude']) == float(row['Latitude']) and float(csvrow['Longitude']) == float(row['Longitude']):
+					# Good
+					goodc += 1
+					goodw.writerow(dict(csvrow).values())
+					good_fh.flush()
+				else:
+					badc += 1
+					#badlatlongs.append({'Latitude': csvrow['Latitude'], 'Longitude': csvrow['Longitude']})
+					badw.writerow(dict(csvrow).values())
+					bad_fh.flush()
+					# Report if lat or long different
+					print(f"Lat/long different - live vs csv:\n\t{row['Latitude']},\t{row['Longitude']}\n\t{csvrow['Latitude']},\t{csvrow['Longitude']}")
+			if goodc > 0 and badc > 0:
+				print(f'Good row also found (count: {goodc}), so fixing db by deleting bad row(s)')
+				if goodc > 1:
+					print(f'Warning: more than one good row in db. (Ok if url is different, though still consider removing. Check good.csv .')
+			if goodc == 0 and badc > 0:
+				# Change bad to good in db
+				fixlatlong(url, row)
+				conn.commit()
+			elif goodc > 0 and badc > 0:
+				fixlatlong(url, row, bydeletion=True)
+				conn.commit()
+
 		# Advance the counter
 		c += 1
 		# Save c to pick up where left off next run
@@ -576,3 +628,11 @@ while True:
 
 # End of main loop
 print('All done!')
+# Make the database
+if trywayback:
+	mkdir_p('postcode.my')
+	initdb(dbfile)
+	maketable('postcode', 'allsofar.csv')
+	dbexe("alter table postcode add column url;")
+	dbexe('CREATE INDEX idx_postcode_url ON postcode(url);')
+	conn.commit()

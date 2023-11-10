@@ -69,6 +69,8 @@ There're also a few urls missing a hyphen. I found them because, during developm
 * Current site as of 10/25/23 has this data: 4520: {'Location': 'Jalan Bakri Batu 2', 'Post Office': 'Muar', 'State': 'Johor', 'Postcode': '84000', 'Latitude': 2.048207, 'Longitude': 102.5775359}, but on Wayback Machine, Location was: 'Jalan Bakri (Batu 2)' See: https://web.archive.org/web/20140730113802/http://postcode.my/johor-muar-jalan-bakri-batu-2-84000.html
 * Current site as of 10/25/23 has this data: 4576: {'Location': 'Kampung Baru Bakri', 'Post Office': 'Muar', 'State': 'Johor', 'Postcode': '84200', 'Latitude': 2.0411917, 'Longitude': 102.646845}, but on Wayback Machine, Location was: 'Kampung Baru (Bakri)'
 * Current site as of 11/01/23 has this data: {'Location': 'Kampung Lobak', 'Post Office': 'Karangan', 'State': 'Kedah', 'Postcode': '09700', 'Latitude': 5.5035641, 'Longitude': 100.6284483}, but on Wayback Machine, Location was: 'Kampung LOBAK'
+* Current site as of 11/06/23 has this data: {'Location': 'Hospital Usm', 'Post Office': 'Kota Bharu', 'State': 'Kelantan', 'Postcode': '15990', 'Latitude': 6.0990447, 'Longitude': 102.2808537}, but on Wayback Machine, Location was: 'Hospital USM'
+* Current site as of 11/08/23 has this data: {'Location': "Cucuh Puteri 'B'", 'Post Office': 'Kuala Krai', 'State': 'Kelantan', 'Postcode': '18000', 'Latitude': 5.3512758, 'Longitude': 102.3193938}, but on Wayback Machine, Location was:  "Cucuh Puteri `B'"
 
 ### Duplicate urls
 I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:

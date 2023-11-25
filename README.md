@@ -71,6 +71,11 @@ There're also a few urls missing a hyphen. I found them because, during developm
 * Current site as of 11/01/23 has this data: {'Location': 'Kampung Lobak', 'Post Office': 'Karangan', 'State': 'Kedah', 'Postcode': '09700', 'Latitude': 5.5035641, 'Longitude': 100.6284483}, but on Wayback Machine, Location was: 'Kampung LOBAK'
 * Current site as of 11/06/23 has this data: {'Location': 'Hospital Usm', 'Post Office': 'Kota Bharu', 'State': 'Kelantan', 'Postcode': '15990', 'Latitude': 6.0990447, 'Longitude': 102.2808537}, but on Wayback Machine, Location was: 'Hospital USM'
 * Current site as of 11/08/23 has this data: {'Location': "Cucuh Puteri 'B'", 'Post Office': 'Kuala Krai', 'State': 'Kelantan', 'Postcode': '18000', 'Latitude': 5.3512758, 'Longitude': 102.3193938}, but on Wayback Machine, Location was:  "Cucuh Puteri `B'"
+* Current site as of 11/17/23 has this data: {'Location': "Kampung Tengah Melaka Pindah", 'Post Office': 'Alor Gajah', 'State': 'Melaka', 'Postcode': '78000', 'Latitude': 2.4077702, 'Longitude': 102.1777214}, but on Wayback Machine, Location was:   "Kampung Tengah (Melaka Pindah)"
+* Current site as of 11/18/23 has this data: {'Location': "Kampung Tebat", 'Post Office': 'Alor Gajah', 'State': 'Melaka', 'Postcode': '78000', 'Latitude': 2.373973, 'Longitude': 102.2114239}, but on Wayback Machine, Location was:  "Kampung (Tebat)"
+* Current site as of 11/20/23 has this data: {'Location': 'Jasin Industrial Park', 'Post Office': 'Bemban', 'State': 'Melaka', 'Postcode': '77200', 'Latitude': 2.2873868, 'Longitude': 102.408433}, but on Wayback Machine, Location was:  "Jasin IndustRial Park"
+* Current site as of 11/22/23 has this data: {'Location': 'Kampung Tengah Berisu', 'Post Office': 'Lubok China', 'State': 'Melaka', 'Postcode': '78100', 'Latitude': 2.435383, 'Longitude': 102.1317059}, but on Wayback Machine, Location was:  "Kampung Tengah (Berisu)"
+* Current site as of 11/25/23 has this data: 18492: {'Location': 'Kampung Tengah Tanjong Minyak', 'Post Office': 'Melaka', 'State': 'Melaka', 'Postcode': '75260', 'Latitude': 2.224285, 'Longitude': 102.2021632}, but on Wayback Machine, Location was:  "Kampung Tengah (Tanjong Minyak)"
 
 ### Duplicate urls
 I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:

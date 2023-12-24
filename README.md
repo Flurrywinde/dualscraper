@@ -77,6 +77,10 @@ There're also a few urls missing a hyphen. I found them because, during developm
 * Current site as of 11/22/23 has this data: {'Location': 'Kampung Tengah Berisu', 'Post Office': 'Lubok China', 'State': 'Melaka', 'Postcode': '78100', 'Latitude': 2.435383, 'Longitude': 102.1317059}, but on Wayback Machine, Location was:  "Kampung Tengah (Berisu)"
 * Current site as of 11/25/23 has this data: {'Location': 'Kampung Tengah Tanjong Minyak', 'Post Office': 'Melaka', 'State': 'Melaka', 'Postcode': '75260', 'Latitude': 2.224285, 'Longitude': 102.2021632}, but on Wayback Machine, Location was:  "Kampung Tengah (Tanjong Minyak)"
 * Current site as of 11/30/23 has this data: {'Location': 'Bandar Baru Enstek', 'Post Office': 'Bandar Enstek', 'State': 'Negeri Sembilan', 'Postcode': '71760', 'Latitude': 2.741725, 'Longitude': 101.762897}, but on Wayback Machine, Location was:  "Bandar Baru ENSTEK"
+* Current site as of 12/15/23 has this data: {'Location': 'Kampung Baru Kuala Dipang', 'Post Office': 'Jeram', 'State': 'Perak', 'Postcode': '31850', 'Latitude': 4.3732232, 'Longitude': 101.1563409}, but on Wayback Machine, Location was:  "Kampung Baru ( Kuala Dipang )"
+* Current site as of 12/20/23 has this data: {'Location': 'Kampung Tersusun Batu 6 - 8 1/4', 'Post Office': 'Ulu Kinta', 'State': 'Perak', 'Postcode': '31150', 'Latitude': 4.6273587, 'Longitude': 101.1520869}, but on Wayback Machine, Location was:  "Kampung Tersusun (Batu 6 - 8 1/4)"
+* Current site as of 12/22/23 has this data: {'Location': 'Medan Angsana (1, 2, 4)', 'Post Office': 'Ayer Itam', 'State': 'Pulau Pinang', 'Postcode': '11500', 'Latitude': 5.3908116, 'Longitude': 100.2845653}, but on Wayback Machine, Location was:  "Medan Angsana (1- 2- 4)"
+* Current site as of 12/23/23 has this data: {'Location': 'Lorong Permatang Pasir (1,8,9,10)', 'Post Office': 'Balik Pulau', 'State': 'Pulau Pinang', 'Postcode': '11010', 'Latitude': 5.3668749, 'Longitude': 100.2164317}, but on Wayback Machine, Location was:  "Lorong Permatang Pasir (1-8-9-10)"
 
 ### Duplicate urls
 I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:

@@ -120,6 +120,9 @@ There're also a few urls missing a hyphen. I found them because, during developm
 * Current site as of 1/22/24 has this data: {'Location': 'Lorong Hassan Abbas (2,3,4,7)', 'Post Office': 'Pulau Pinang', 'State': 'Pulau Pinang', 'Postcode': '11050', 'Latitude': 5.4583159, 'Longitude': 100.2319757}, but on Wayback Machine, Location was: "Lorong Hassan Abbas (2-3-4-7)"
 * Current site as of 1/23/24 has this data: {'Location': 'Lorong Simpang Ampat (6,6A,6B,8)', 'Post Office': 'Simpang Ampat', 'State': 'Pulau Pinang', 'Postcode': '14120', 'Latitude': 5.2819167, 'Longitude': 100.4776747}, but on Wayback Machine, Location was: "Lorong Simpang Ampat (6-6A-6B-8)"
 * Current site as of 1/24/24 has this data: {'Location': 'Lorong Simpang Ampat (6A, 6B)', 'Post Office': 'Simpang Ampat', 'State': 'Pulau Pinang', 'Postcode': '14100', 'Latitude': 5.2617296, 'Longitude': 100.4775153}, but on Wayback Machine, Location was: "Lorong Simpang Ampat (6A- 6B)"
+* Current site as of 1/24/24 has this data: {'Location': 'Tingkat Bukit Minyak (7, 9)', 'Post Office': 'Simpang Ampat', 'State': 'Pulau Pinang', 'Postcode': '14100', 'Latitude': 5.3258239, 'Longitude': 100.4436018}, but on Wayback Machine, Location was: "Tingkat Bukit Minyak (7- 9)"
+* Current site as of 1/25/24 has this data: {'Location': 'Persiaran Bukit Jawi (1,2,4)', 'Post Office': 'Sungai Jawi', 'State': 'Pulau Pinang', 'Postcode': '14200', 'Latitude': 5.2116124, 'Longitude': 100.4958678}, but on Wayback Machine, Location was: "Persiaran Bukit Jawi (1-2-4)"
+* Current site as of 1/26/24 has this data: {'Location': 'Jalan Seri Menderung (1, 3)', 'Post Office': 'Tasek Gelugor', 'State': 'Pulau Pinang', 'Postcode': '13300', 'Latitude': 5.5158102, 'Longitude': 100.5041355}, but on Wayback Machine, Location was: "Jalan Seri Menderung (1- 3)"
 
 ### Duplicate urls
 I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:

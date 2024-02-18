@@ -125,6 +125,10 @@ There're also a few urls missing a hyphen. I found them because, during developm
 * Current site as of 1/26/24 has this data: {'Location': 'Jalan Seri Menderung (1, 3)', 'Post Office': 'Tasek Gelugor', 'State': 'Pulau Pinang', 'Postcode': '13300', 'Latitude': 5.5158102, 'Longitude': 100.5041355}, but on Wayback Machine, Location was: "Jalan Seri Menderung (1- 3)"
 * Current site as of 2/01/24 has this data: {'Location': 'Ranau - Peti Surat', 'Post Office': 'Ranau', 'State': 'Sabah', 'Postcode': '89307', 'Latitude': 5.953561, 'Longitude': 116.6639501}, but on Wayback Machine, Location was: "Ranau - Peti surat"
 * Current site as of 2/01/24 has this data: {'Location': 'Kampung Baru Jenjarom', 'Post Office': 'Jenjarom', 'State': 'Selangor', 'Postcode': '42600', 'Latitude': 2.8766806, 'Longitude': 101.4984637}, but on Wayback Machine, Location was: "Kampung Baru (Jenjarom)"
+* Current site as of 2/09/24 has this data: {'Location': 'Jalan Dahlia / KU 8', 'Post Office': 'Klang', 'State': 'Selangor', 'Postcode': '41050', 'Latitude': 3.0803977, 'Longitude': 101.4509506}, but on Wayback Machine, Location was: "Jalan Dahlia (KU 8)"
+* Current site as of 2/12/24 has this data: {'Location': 'Persiaran Bukit Raja 1/KU 1', 'Post Office': 'Klang', 'State': 'Selangor', 'Postcode': '41150', 'Latitude': 3.0631518, 'Longitude': 101.4680174}, but on Wayback Machine, Location was: "Persiaran Bukit Raja 1 / KU 1"
+* Current site as of 2/16/24 has this data: {'Location': 'Kawasan Perindustrian Hi-Tech 3', 'Post Office': 'Semenyih', 'State': 'Selangor', 'Postcode': '43500', 'Latitude': 2.990371, 'Longitude': 101.868618}, but on Wayback Machine, Location was: "Kawasan Perindustrian Hi-tech 3"
+* Current site as of 2/16/24 has this data: {'Location': 'Kawasan Perindustrian Hi-Tech 5', 'Post Office': 'Semenyih', 'State': 'Selangor', 'Postcode': '43500', 'Latitude': 2.9905507, 'Longitude': 101.8671799}, but on Wayback Machine, Location was: "Kawasan Perindustrian Hi-tech 5"
 
 ### Duplicate urls
 I combined listing_part1.xml and listing_part2.xml and discovered these urls were in the combined listing twice:

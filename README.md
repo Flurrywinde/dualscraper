@@ -59,7 +59,7 @@ To output a sorted .csv file from the current database, run `db2csv`. This .csv 
 ## Errors found on the postcode.my site
 In scraping this data, I found some errors and inconsistencies in the data. (This doesn't affect the accuracy of the current data.)
 
-See: [errors.md](https://github.com/Flurrywinde/dualscraper/errors.md)
+See: [errors.md](https://github.com/Flurrywinde/dualscraper/blob/main/errors.md)
 
 ## TODO
 * Use `pipreqs` to make a requirements.txt file and add a Dependencies section to this readme.

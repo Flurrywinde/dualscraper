@@ -11,7 +11,7 @@ Here is the lat/long data, so you don't have to run the scraper yourself:
 [https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv)
 
 #### Old (has out-of-date data from the wayback machine)
-[https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv.old)
+[https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv.old](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv.old)
 
 ### sqlite database
 [https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.db](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.db)
@@ -59,7 +59,7 @@ To output a sorted .csv file from the current database, run `db2csv`. This .csv 
 ## Errors found on the postcode.my site
 In scraping this data, I found some errors and inconsistencies in the data. (This doesn't affect the accuracy of the current data.)
 
-See: [https://github.com/Flurrywinde/dualscraper/raw/main/errors.md](https://github.com/Flurrywinde/dualscraper/raw/main/errors.md)
+See: [errors.md](https://github.com/Flurrywinde/dualscraper/errors.md)
 
 ## TODO
 * Use `pipreqs` to make a requirements.txt file and add a Dependencies section to this readme.

@@ -3,6 +3,8 @@ Scrapes lat/long data from postcode.my, trying the Wayback Machine first, due to
 
 The purpose of this repo is to serve as a template and demonstration of an MVP for scraping sites that employ CloudFlare throttling (presenting a Captcha if scraped too fast). To speed up the process, it tries the Wayback Machine first, only falling back to the live site if the page in question isn't on the Wayback Machine (or the data, in this case lat/long data, isn't there or looks definitely wrong).
 
+While it took around four months to scrape all 56,894 urls on the live site, it took only a few days on the Wayback Machine.
+
 ## The lat/long data
 Here is the lat/long data, so you don't have to run the scraper yourself:
 
@@ -10,7 +12,7 @@ Here is the lat/long data, so you don't have to run the scraper yourself:
 #### Latest (as of March 2, 2024)
 [https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv)
 
-#### Old (has out-of-date data from the wayback machine)
+#### Old (has out-of-date data from the Wayback Machine)
 [https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv.old](https://github.com/Flurrywinde/dualscraper/raw/main/postcode.my/postcode-my.csv.old)
 
 ### sqlite database
